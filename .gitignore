@@ -1,0 +1,11 @@
+/.vscode
+/.cmake
+/build
+/install
+/scratch
+
+/main.cpp
+/0.output
+
+/paper.jats
+/paper.pdf

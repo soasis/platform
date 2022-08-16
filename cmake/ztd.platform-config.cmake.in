@@ -1,0 +1,8 @@
+@PACKAGE_INIT@
+
+if (TARGET ztd::platform)
+	get_target_property(ZTD_PLATFORM_INCLUDE_DIRS
+		ztd.platform INTERFACE_INCLUDE_DIRECTORIES)
+	set_and_check(ZTD_PLATFORM_INCLUDE_DIRS "${ZTD_PLATFORM_INCLUDE_DIRS}")
+	set(ZTD_PLATFORM_LIBRARIES ztd::platform)
+endif()
