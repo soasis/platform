@@ -125,6 +125,69 @@ FetchContent_Declare(ztd.idk
 	GIT_TAG main)
 FetchContent_MakeAvailable(ztd.idk)
 
+# encoding_c
+if (ZTD_PLATFORM_USE_ENCODING_C)
+	function(encoding_rs_c_dependency_jail)
+		find_program(cargo_command NAMES cargo cargo.exe)
+		if (NOT cargo_command)
+			message(FATAL_ERROR "Could not find the \"cargo\" command to invoke for building the hsivonen/encoding_rs_c library")
+		endif()
+
+		FetchContent_Declare(encoding_rs_c_external
+			GIT_REPOSITORY https://github.com/hsivonen/encoding_c.git
+		)
+		FetchContent_MakeAvailable(encoding_rs_c_external)
+		if (BUILD_SHARED_LIBS)
+			set(encoding_rs_c_type SHARED)
+		else()
+			set(encoding_rs_c_type STATIC)
+		endif()
+		set(cargo_build_result_json_file ${encoding_rs_c_external_BINARY_DIR}/cargo_build_result.json)
+		set(encoding_rs_c_static_lib ${encoding_rs_c_external_BINARY_DIR}/$<IF:$<CONFIG:Release,MinSizeRel,RelWithDebInfo>,release,debug>/${CMAKE_STATIC_LIBRARY_PREFIX}encoding_c${CMAKE_STATIC_LIBRARY_SUFFIX})
+		set(encoding_rs_c_dynamic_lib ${encoding_rs_c_external_BINARY_DIR}/$<IF:$<CONFIG:Release,MinSizeRel,RelWithDebInfo>,release,debug>/${CMAKE_SHARED_LIBRARY_PREFIX}encoding_c${CMAKE_SHARED_LIBRARY_SUFFIX})
+		add_custom_command(OUTPUT ${cargo_build_result_json_file}
+				$<$<OR:$<BOOL:${WIN32}>,$<STREQUAL:${encoding_rs_c_type},STATIC>>:${encoding_rs_c_static_lib}>
+				$<$<STREQUAL:${encoding_rs_c_type},SHARED>:${encoding_rs_c_dynamic_lib}>
+			COMMAND ${cargo_command} rustc
+				"--all-features"
+				"--message-format=json"
+				"--target-dir=${encoding_rs_c_external_BINARY_DIR}"
+				"--crate-type=$<IF:$<STREQUAL:${encoding_rs_c_type},SHARED>,cdylib,staticlib>"
+				$<$<BOOL:$<CONFIG:Release,MinSizeRel,RelWithDebInfo>>:--release>
+				> ${cargo_build_result_json_file}
+			COMMENT "[ztd.platform] building rust library encoding_c..."
+			WORKING_DIRECTORY ${encoding_rs_c_external_SOURCE_DIR}
+		)
+		add_custom_target(encoding_rs_c_external_build
+			DEPENDS ${cargo_build_result_json_file}
+			$<$<OR:$<BOOL:${WIN32}>,$<STREQUAL:${encoding_rs_c_type},STATIC>>:${encoding_rs_c_static_lib}>
+			$<$<STREQUAL:${encoding_rs_c_type},SHARED>:${encoding_rs_c_dynamic_lib}>
+		)
+		add_library(encoding_rs_c INTERFACE)
+		add_library(encoding_rs::c ALIAS encoding_rs_c)
+		target_include_directories(encoding_rs_c
+			INTERFACE
+				${encoding_rs_c_external_SOURCE_DIR}/include
+		)
+		target_link_libraries(encoding_rs_c
+			INTERFACE
+				$<IF:$<STREQUAL:$<TARGET_PROPERTY:encoding_rs_c,TYPE>,SHARED>,${encoding_rs_c_dynamic_lib},${encoding_rs_c_static_lib}>
+				$<$<OR:$<BOOL:${WIN32}>,$<STREQUAL:$<TARGET_PROPERTY:encoding_rs_c,TYPE>,STATIC>>:${encoding_rs_c_static_lib}>
+				$<$<BOOL:${WIN32}>:Ws2_32.lib>
+				$<$<BOOL:${WIN32}>:Userenv.lib>
+				$<$<BOOL:${WIN32}>:BCrypt.lib>
+		)
+		add_dependencies(encoding_rs_c encoding_rs_c_external_build)
+	endfunction()
+	encoding_rs_c_dependency_jail()
+endif()
+string(CONCAT ztd-platform-encoding_c-define
+	$<IF:$<BOOL:${ZTD_PLATFORM_USE_ENCODING_C}>,
+		ZTD_PLATFORM_ENCODING_C=1,
+		ZTD_PLATFORM_ENCODING_C=0
+	>
+)
+
 # iconv package
 if (ZTD_PLATFORM_USE_LIBICONV)
 	# # Iconv setup
@@ -289,14 +352,17 @@ target_compile_definitions(ztd.platform
 		${ztd-platform-static-libiconv-define}
 		${ztd-platform-dynamic-libiconv-define}
 		${ztd-platform-icu-define}
+		${ztd-platform-encoding_c-define}
 )
 target_link_libraries(ztd.platform
 	PUBLIC
 		ztd::idk
-		$<$<BOOL:Iconv::Iconv>:$<$<TARGET_EXISTS:Iconv::Iconv>:Iconv::Iconv>>
-		$<$<BOOL:ICU::uc>:$<$<TARGET_EXISTS:ICU::uc>:ICU::uc>>
-		$<$<BOOL:ICU::i18n>:$<$<TARGET_EXISTS:ICU::i18n>:ICU::i18n>>
+		$<$<BOOL:${ZTD_PLATFORM_USE_LIBICONV}>:$<$<TARGET_EXISTS:Iconv::Iconv>:Iconv::Iconv>>
+		$<$<BOOL:${ZTD_PLATFORM_USE_ICU}>:$<$<TARGET_EXISTS:ICU::uc>:ICU::uc>>
+		$<$<BOOL:${ZTD_PLATFORM_USE_ICU}>:$<$<TARGET_EXISTS:ICU::i18n>:ICU::i18n>>
+		$<$<BOOL:${ZTD_PLATFORM_USE_ENCODING_C}>:$<$<TARGET_EXISTS:encoding_rs::c>:encoding_rs::c>>
 )
+
 
 if(ZTD_PLATFORM_IS_TOP_LEVEL_PROJECT)
 	target_compile_options(ztd.platform PRIVATE
