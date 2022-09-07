@@ -176,6 +176,7 @@ if (ZTD_PLATFORM_USE_ENCODING_C)
 				$<$<BOOL:${WIN32}>:Ws2_32.lib>
 				$<$<BOOL:${WIN32}>:Userenv.lib>
 				$<$<BOOL:${WIN32}>:BCrypt.lib>
+				${CMAKE_DL_LIBS}
 		)
 		add_dependencies(encoding_rs_c encoding_rs_c_external_build)
 	endfunction()
@@ -191,11 +192,11 @@ string(CONCAT ztd-platform-encoding_c-define
 # iconv package
 if (ZTD_PLATFORM_USE_LIBICONV)
 	# # Iconv setup
-	if (EXISTS ${ICU_ROOT})
+	if (EXISTS ${Iconv_ROOT})
 		add_library(iconv_shared SHARED IMPORTED)
 		add_library(Iconv::Iconv ALIAS iconv_shared)
-		set(iconv_root_location_dir ${ICU_ROOT})
-		cmake_path(APPEND iconv_imported_location_file ${ICU_ROOT} "lib" "iconv.lib" )
+		set(iconv_root_location_dir ${Iconv_ROOT})
+		cmake_path(APPEND iconv_imported_location_file ${Iconv_ROOT} "lib" "iconv.lib" )
 		cmake_path(GET iconv_imported_location_file STEM iconv_binary_location_file)
 		cmake_path(GET iconv_imported_location_file PARENT_PATH iconv_binary_location_dir)
 		cmake_path(GET iconv_binary_location_dir PARENT_PATH iconv_root_location_dir)
@@ -218,7 +219,7 @@ if (ZTD_PLATFORM_USE_LIBICONV)
 			IMPORTED_IMPLIB ${iconv_imported_location_file}
 		)
 		
-		cmake_path(APPEND iconv_include_directories ${ICU_ROOT} "include")
+		cmake_path(APPEND iconv_include_directories ${Iconv_ROOT} "include")
 		if (NOT EXISTS ${iconv_include_directories})
 			get_target_property(iconv_include_directories Iconv::Iconv INCLUDE_DIRECTORIES)
 			if (NOT EXISTS ${iconv_include_directories})
@@ -233,6 +234,8 @@ if (ZTD_PLATFORM_USE_LIBICONV)
 				${iconv_include_directories}
 		)
 		get_target_property(Iconv_INCLUDE_DIRECTORIES Iconv::Iconv INTERFACE_INCLUDE_DIRECTORIES)
+	else()
+		find_package(Iconv REQUIRED)
 	endif()
 endif()
 string(CONCAT ztd-platform-libiconv-define
@@ -317,6 +320,8 @@ if (ZTD_PLATFORM_USE_ICU)
 			INTERFACE
 				${icu_i18n_binary_location_dir}/../include/
 		)
+	else()
+		find_package(ICU COMPONENTS uc i18n)
 	endif()
 endif()
 string(CONCAT ztd-platform-icu-define

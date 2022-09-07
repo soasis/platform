@@ -26,7 +26,7 @@ namespace encoding_rs {
 	class Encoding;
 	class Decoder;
 	class Encoder;
-}; // namespace encoding_rs
+} // namespace encoding_rs
 
 #define ENCODING_RS_ENCODING encoding_rs::Encoding
 #define ENCODING_RS_NOT_NULL_CONST_ENCODING_PTR const encoding_rs::Encoding*
@@ -1281,6 +1281,6 @@ namespace encoding_rs {
 		~Encoding()                          = delete;
 	};
 
-}; // namespace encoding_rs
+} // namespace encoding_rs
 
 #endif // ztd_platform_encoding_rs_cpp_hpp_
