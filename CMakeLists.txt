@@ -115,8 +115,9 @@ option(ZTD_PLATFORM_TESTS "Enable build of tests" OFF)
 option(ZTD_PLATFORM_DOCUMENTATION "Enable build of documentation" OFF)
 option(ZTD_PLATFORM_DOCUMENTATION_NO_SPHINX "Turn off Sphinx usage (useful for ReadTheDocs builds)" OFF)
 option(ZTD_PLATFORM_EXAMPLES "Enable build of examples" OFF)
-option(ZTD_PLATFORM_USE_LIBICONV "Enable libiconv with ztd::platform" ON)
-option(ZTD_PLATFORM_USE_ICU "Enable ICU with ztd::platform" ON)
+option(ZTD_PLATFORM_USE_LIBICONV "Enable libiconv with ztd::platform" OFF)
+option(ZTD_PLATFORM_USE_ICU "Enable ICU with ztd::platform" OFF)
+option(ZTD_PLATFORM_USE_ENCODING_C "Enable encoding_rs's C bindings with ztd::platform" OFF)
 
 # # Dependencies
 # ztd.idk
