@@ -214,6 +214,26 @@ if (ZTD_PLATFORM_USE_LIBICONV)
 				endif()
 			endif()
 		endif()
+		cmake_path(GET iconv_binary_location_dir PARENT_PATH iconv_dll_path)
+		cmake_path(APPEND charset_dll_path ${iconv_binary_location_dir} "charset-2.dll" )
+		if (NOT EXISTS ${charset_dll_path})
+			cmake_path(APPEND charset_dll_path ${iconv_binary_location_dir} "charset-1.dll" )
+			if (NOT EXISTS ${charset_dll_path})
+				cmake_path(APPEND charset_dll_path ${iconv_binary_location_dir} "charset.dll" )
+			endif()
+		endif()
+		if (EXISTS ${charset_dll_path})
+			add_library(charset_shared SHARED IMPORTED)
+			add_library(Iconv::charset ALIAS charset_shared)
+			set_target_properties(iconv_shared
+				PROPERTIES
+				IMPORTED_LOCATION ${iconv_dll_path}
+				IMPORTED_IMPLIB ${iconv_imported_location_file}
+			)
+			target_link_libraries(iconv_shared
+				INTERFACE Iconv::charset
+			)
+		endif()
 		set_target_properties(iconv_shared
 			PROPERTIES
 			IMPORTED_LOCATION ${iconv_dll_path}

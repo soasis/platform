@@ -12,6 +12,10 @@
 #ifndef ztd_platform_encoding_rs_cpp_hpp_
 #define ztd_platform_encoding_rs_cpp_hpp_
 
+#include <ztd/platform/version.hpp>
+
+#if ZTD_IS_ON(ZTD_PLATFORM_ENCODING_C)
+
 #include <ztd/idk/span.hpp>
 #include <ztd/idk/c_string_view.hpp>
 
@@ -1057,11 +1061,11 @@ namespace encoding_rs {
 				std::memcpy(&vec[0], string.data(), string.size());
 			}
 			auto encoder = output_enc->new_encoder();
-			auto needed  = encoder->max_buffer_length_from_utf8_if_no_unmappables(string.size());
-			if (!needed) {
+			auto first_maybe_needed  = encoder->max_buffer_length_from_utf8_if_no_unmappables(string.size());
+			if (!first_maybe_needed) {
 				throw std::overflow_error("Overflow in buffer size computation.");
 			}
-			std::vector<uint8_t> vec(needed.value());
+			std::vector<uint8_t> vec(first_maybe_needed.value());
 			bool total_had_errors = false;
 			size_t total_read     = 0;
 			size_t total_written  = 0;
@@ -1077,11 +1081,11 @@ namespace encoding_rs {
 					vec.resize(total_written);
 					return { vec, static_cast<const Encoding*>(output_enc), total_had_errors };
 				}
-				auto needed = encoder->max_buffer_length_from_utf8_if_no_unmappables(string.size() - total_read);
-				if (!needed) {
+				auto maybe_needed = encoder->max_buffer_length_from_utf8_if_no_unmappables(string.size() - total_read);
+				if (!maybe_needed) {
 					throw std::overflow_error("Overflow in buffer size computation.");
 				}
-				vec.resize(total_written + needed.value());
+				vec.resize(total_written + maybe_needed.value());
 			}
 		}
 
@@ -1109,11 +1113,11 @@ namespace encoding_rs {
 		inline std::tuple<std::vector<uint8_t>, const Encoding*, bool> encode(std::u16string_view string) const {
 			auto output_enc = output_encoding();
 			auto encoder    = output_enc->new_encoder();
-			auto needed     = encoder->max_buffer_length_from_utf16_if_no_unmappables(string.size());
-			if (!needed) {
+			auto first_maybe_needed     = encoder->max_buffer_length_from_utf16_if_no_unmappables(string.size());
+			if (!first_maybe_needed) {
 				throw std::overflow_error("Overflow in buffer size computation.");
 			}
-			std::vector<uint8_t> vec(needed.value());
+			std::vector<uint8_t> vec(first_maybe_needed.value());
 			bool total_had_errors = false;
 			size_t total_read     = 0;
 			size_t total_written  = 0;
@@ -1129,11 +1133,11 @@ namespace encoding_rs {
 					vec.resize(total_written);
 					return { vec, static_cast<const Encoding*>(output_enc), total_had_errors };
 				}
-				auto needed = encoder->max_buffer_length_from_utf16_if_no_unmappables(string.size() - total_read);
-				if (!needed) {
+				auto maybe_needed = encoder->max_buffer_length_from_utf16_if_no_unmappables(string.size() - total_read);
+				if (!maybe_needed) {
 					throw std::overflow_error("Overflow in buffer size computation.");
 				}
-				vec.resize(total_written + needed.value());
+				vec.resize(total_written + maybe_needed.value());
 			}
 		}
 
@@ -1284,3 +1288,5 @@ namespace encoding_rs {
 } // namespace encoding_rs
 
 #endif // ztd_platform_encoding_rs_cpp_hpp_
+
+#endif
