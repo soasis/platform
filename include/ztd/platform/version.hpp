@@ -70,7 +70,7 @@
 	#else
 		#define ZTD_PLATFORM_ICONV_H_I_ ZTD_OFF
 	#endif
-#elif ZTD_PLATFORM_HAS_INCLUDE_I_(<iconv.h>)
+#elif ZTD_HAS_INCLUDE_I_(<iconv.h>)
 	#define ZTD_PLATFORM_ICONV_H_I_ ZTD_DEFAULT_ON
 #else
 	#define ZTD_PLATFORM_ICONV_H_I_ ZTD_DEFAULT_OFF
