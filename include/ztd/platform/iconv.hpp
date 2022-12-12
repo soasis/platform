@@ -37,4 +37,4 @@
 
 #include <ztd/platform/iconv/iconv.hpp>
 
-#endif // ZTD_PLATFORM_ICONV_HPP
+#endif

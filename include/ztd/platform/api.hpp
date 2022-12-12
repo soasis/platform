@@ -89,4 +89,4 @@
 
 // clang-format on
 
-#endif // ZTD_PLATFORM_API_HPP
+#endif

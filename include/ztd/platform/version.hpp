@@ -134,4 +134,4 @@
 
 #include <ztd/platform/api.hpp>
 
-#endif // ZTD_PLATFORM_VERSION_HPP
+#endif

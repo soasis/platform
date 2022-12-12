@@ -38,4 +38,4 @@
 #include <ztd/platform/iconv.hpp>
 #include <ztd/platform/encoding_c/encoding_rs_cpp.hpp>
 
-#endif // ZTD_PLATFORM_HPP
+#endif
