@@ -25,6 +25,7 @@
 #include <string_view>
 #include <tuple>
 #include <vector>
+#include <stdexcept>
 
 namespace encoding_rs {
 	class Encoding;
@@ -1060,8 +1061,8 @@ namespace encoding_rs {
 				std::vector<uint8_t> vec(string.size());
 				std::memcpy(&vec[0], string.data(), string.size());
 			}
-			auto encoder = output_enc->new_encoder();
-			auto first_maybe_needed  = encoder->max_buffer_length_from_utf8_if_no_unmappables(string.size());
+			auto encoder            = output_enc->new_encoder();
+			auto first_maybe_needed = encoder->max_buffer_length_from_utf8_if_no_unmappables(string.size());
 			if (!first_maybe_needed) {
 				throw std::overflow_error("Overflow in buffer size computation.");
 			}
@@ -1081,7 +1082,8 @@ namespace encoding_rs {
 					vec.resize(total_written);
 					return { vec, static_cast<const Encoding*>(output_enc), total_had_errors };
 				}
-				auto maybe_needed = encoder->max_buffer_length_from_utf8_if_no_unmappables(string.size() - total_read);
+				auto maybe_needed
+				     = encoder->max_buffer_length_from_utf8_if_no_unmappables(string.size() - total_read);
 				if (!maybe_needed) {
 					throw std::overflow_error("Overflow in buffer size computation.");
 				}
@@ -1111,9 +1113,9 @@ namespace encoding_rs {
 		 * when encoding segmented output.
 		 */
 		inline std::tuple<std::vector<uint8_t>, const Encoding*, bool> encode(std::u16string_view string) const {
-			auto output_enc = output_encoding();
-			auto encoder    = output_enc->new_encoder();
-			auto first_maybe_needed     = encoder->max_buffer_length_from_utf16_if_no_unmappables(string.size());
+			auto output_enc         = output_encoding();
+			auto encoder            = output_enc->new_encoder();
+			auto first_maybe_needed = encoder->max_buffer_length_from_utf16_if_no_unmappables(string.size());
 			if (!first_maybe_needed) {
 				throw std::overflow_error("Overflow in buffer size computation.");
 			}
@@ -1133,7 +1135,8 @@ namespace encoding_rs {
 					vec.resize(total_written);
 					return { vec, static_cast<const Encoding*>(output_enc), total_had_errors };
 				}
-				auto maybe_needed = encoder->max_buffer_length_from_utf16_if_no_unmappables(string.size() - total_read);
+				auto maybe_needed
+				     = encoder->max_buffer_length_from_utf16_if_no_unmappables(string.size() - total_read);
 				if (!maybe_needed) {
 					throw std::overflow_error("Overflow in buffer size computation.");
 				}
