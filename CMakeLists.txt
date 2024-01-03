@@ -1,7 +1,7 @@
 # =============================================================================
 #
 # ztd.platform
-# Copyright © 2022-2023 JeanHeyd "ThePhD" Meneide and Shepherd's Oasis, LLC
+# Copyright © JeanHeyd "ThePhD" Meneide and Shepherd's Oasis, LLC
 # Contact: opensource@soasis.org
 #
 # Commercial License Usage
@@ -177,6 +177,8 @@ if (ZTD_PLATFORM_USE_ENCODING_C)
 				$<$<BOOL:${WIN32}>:Ws2_32.lib>
 				$<$<BOOL:${WIN32}>:Userenv.lib>
 				$<$<BOOL:${WIN32}>:BCrypt.lib>
+				$<$<BOOL:${WIN32}>:ntdll.lib>
+				$<$<BOOL:${WIN32}>:advapi32.lib>
 				${CMAKE_DL_LIBS}
 		)
 		add_dependencies(encoding_rs_c encoding_rs_c_external_build)
