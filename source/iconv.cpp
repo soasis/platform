@@ -75,7 +75,7 @@ namespace ztd { namespace plat {
 					"libc.so", "libc" } };
 				for (::std::size_t __index = 0; __index < std::size(__lib_names); ++__index) {
 					const char* __lib_name = __lib_names[__index];
-#if ZTD_IS_ON(ZTD_PLATFORM_POSIX) && ZTD_IS_ON(ZTD_DLFCN_H)
+#if ZTD_IS_ON(ZTD_PLATFORM_POSIX) && ZTD_IS_ON(ZTD_HEADER_DLFCN_H)
 					this->_M_handle = dlopen(__lib_name, RTLD_LAZY);
 #elif ZTD_IS_ON(ZTD_PLATFORM_WINDOWS)
 					HMODULE __current_module = NULL;
@@ -94,7 +94,7 @@ namespace ztd { namespace plat {
 					for (::std::size_t __convert_index = 0; __convert_index < __convert_names.size();
 						++__convert_index) {
 						const char* __convert_name = __convert_names[__convert_index];
-#if ZTD_IS_ON(ZTD_PLATFORM_POSIX) && ZTD_IS_ON(ZTD_DLFCN_H)
+#if ZTD_IS_ON(ZTD_PLATFORM_POSIX) && ZTD_IS_ON(ZTD_HEADER_DLFCN_H)
 						void* __convert_f = dlsym(this->_M_handle, __convert_name);
 #elif ZTD_IS_ON(ZTD_PLATFORM_WINDOWS)
 						void* __convert_f = reinterpret_cast<void*>(
@@ -108,7 +108,7 @@ namespace ztd { namespace plat {
 					}
 					for (::std::size_t __open_index = 0; __open_index < __open_names.size(); ++__open_index) {
 						const char* __open_name = __open_names[__open_index];
-#if ZTD_IS_ON(ZTD_PLATFORM_POSIX) && ZTD_IS_ON(ZTD_DLFCN_H)
+#if ZTD_IS_ON(ZTD_PLATFORM_POSIX) && ZTD_IS_ON(ZTD_HEADER_DLFCN_H)
 						void* __open_f = dlsym(this->_M_handle, __open_name);
 #elif ZTD_IS_ON(ZTD_PLATFORM_WINDOWS)
 						void* __open_f = reinterpret_cast<void*>(
@@ -122,7 +122,7 @@ namespace ztd { namespace plat {
 					}
 					for (::std::size_t __close_index = 0; __close_index < __close_names.size(); ++__close_index) {
 						const char* __close_name = __close_names[__close_index];
-#if ZTD_IS_ON(ZTD_PLATFORM_POSIX) && ZTD_IS_ON(ZTD_DLFCN_H)
+#if ZTD_IS_ON(ZTD_PLATFORM_POSIX) && ZTD_IS_ON(ZTD_HEADER_DLFCN_H)
 						void* __close_f = dlsym(this->_M_handle, __close_name);
 #elif ZTD_IS_ON(ZTD_PLATFORM_WINDOWS)
 						void* __close_f = reinterpret_cast<void*>(
@@ -144,7 +144,7 @@ namespace ztd { namespace plat {
 						break;
 					}
 					if (this->_M_handle != nullptr) {
-#if ZTD_IS_ON(ZTD_PLATFORM_POSIX) && ZTD_IS_ON(ZTD_DLFCN_H)
+#if ZTD_IS_ON(ZTD_PLATFORM_POSIX) && ZTD_IS_ON(ZTD_HEADER_DLFCN_H)
 						int __close_handle_result = dlclose(this->_M_handle);
 						if (__close_handle_result == 0) {
 							// freak out??
@@ -175,7 +175,7 @@ namespace ztd { namespace plat {
 
 			ZTD_PLATFORM_API_LINKAGE_I_ __startup::~__startup() {
 #if ZTD_IS_ON(ZTD_PLATFORM_LIBICONV_LOAD)
-#if ZTD_IS_ON(ZTD_PLATFORM_POSIX) && ZTD_IS_ON(ZTD_DLFCN_H)
+#if ZTD_IS_ON(ZTD_PLATFORM_POSIX) && ZTD_IS_ON(ZTD_HEADER_DLFCN_H)
 				int __close_handle_result = dlclose(this->_M_handle);
 				if (__close_handle_result == 0) {
 					// freak out??
